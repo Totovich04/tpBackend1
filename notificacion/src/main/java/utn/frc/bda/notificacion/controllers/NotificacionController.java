@@ -8,5 +8,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/notificaciones")
 public class NotificacionController {
 
-    private final NotificacionService notificacionService;
+//    private final NotificacionService notificacionService;
 }
