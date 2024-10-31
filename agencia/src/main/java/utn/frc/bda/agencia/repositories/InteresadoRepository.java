@@ -1,4 +1,7 @@
 package utn.frc.bda.agencia.repositories;
 
-public class InteresadoRepository {
+import org.springframework.data.repository.CrudRepository;
+import utn.frc.bda.agencia.entities.InteresadoEntity;
+
+public interface InteresadoRepository  extends CrudRepository<InteresadoEntity, Integer> {
 }

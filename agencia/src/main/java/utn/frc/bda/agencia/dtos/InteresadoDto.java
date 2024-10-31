@@ -2,6 +2,7 @@ package utn.frc.bda.agencia.dtos;
 
 
 import lombok.Data;
+import utn.frc.bda.agencia.entities.InteresadoEntity;
 
 import java.util.Date;
 
@@ -17,4 +18,15 @@ public class InteresadoDto {
     private Boolean restringido;
     private Integer nroLicencia;
     private Date fechaVencimientoLicencia;
+
+    public InteresadoDto(InteresadoEntity interesado) {
+        this.id = interesado.getId();
+        this.tipoDocumento = interesado.getTipoDocumento();
+        this.Documento = interesado.getDocumento();
+        this.nombre = interesado.getNombre();
+        this.apellido = interesado.getApellido();
+        this.restringido = interesado.getRestringido();
+        this.nroLicencia = interesado.getNroLicencia();
+        this.fechaVencimientoLicencia = interesado.getFechaVtoLicencia();
+    }
 }

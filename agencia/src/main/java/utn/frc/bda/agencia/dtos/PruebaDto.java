@@ -2,6 +2,7 @@ package utn.frc.bda.agencia.dtos;
 
 
 import lombok.Data;
+import utn.frc.bda.agencia.entities.PruebaEntity;
 
 import java.util.Date;
 
@@ -9,10 +10,19 @@ import java.util.Date;
 public class PruebaDto {
 
     private Integer id;
-    private Integer idVehiculo;
-    private Integer idInteresado;
-    private Integer idEmpleado;
+    private VehiculoDto idVehiculo;
+    private InteresadoDto idInteresado;
+    private EmpleadoDto idEmpleado;
     private Date fechaHoraInicio;
     private Date fechaHoraFin;
     private String comentarios;
+
+    public PruebaDto(PruebaEntity prueba) {
+        this.idVehiculo = new VehiculoDto(prueba.getVehiculo());
+        this.idEmpleado = new EmpleadoDto(prueba.getEmpleado());
+        this.idInteresado = new InteresadoDto(prueba.getInteresado());
+        this.fechaHoraInicio = prueba.getFechaHoraInicio();
+        this.fechaHoraFin = prueba.getFechaHoraFin();
+        this.comentarios = prueba.getComentarios();
+    }
 }
