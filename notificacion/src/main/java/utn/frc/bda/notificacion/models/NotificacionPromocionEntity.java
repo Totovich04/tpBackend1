@@ -1,5 +1,6 @@
 package utn.frc.bda.notificacion.models;
 
+import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -8,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-
+@Table(name = "NOTIFICACION_PROMOCION")
 public class NotificacionPromocionEntity extends NotificacionEntity {
 
     private String codigoPromocion;
