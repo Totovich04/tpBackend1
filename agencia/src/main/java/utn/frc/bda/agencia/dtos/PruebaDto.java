@@ -1,12 +1,14 @@
 package utn.frc.bda.agencia.dtos;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import utn.frc.bda.agencia.entities.PruebaEntity;
 
 import java.util.Date;
 
 @Data
+@AllArgsConstructor
 public class PruebaDto {
 
     private Integer id;

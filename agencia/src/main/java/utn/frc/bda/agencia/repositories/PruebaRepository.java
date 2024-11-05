@@ -12,4 +12,5 @@ public interface PruebaRepository extends CrudRepository<PruebaEntity, Integer> 
             "FROM PruebaEntity p WHERE p.vehiculo.id = ?1 AND p.fechaHoraFin IS NULL")
     boolean existsByVehiculoIdAndFechaHoraFinIsNull(@Param("idVehiculo") Integer idVehiculo);
     List<PruebaEntity> findByFechaHoraFinIsNull();
+
 }

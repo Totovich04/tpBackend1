@@ -38,6 +38,7 @@ public class PruebaService {
         return  new PruebaDto(prueba);
     }
 
+
     private PruebaEntity buildPruebaFromDto(PruebaDto dto) {
         VehiculoEntity vehiculo = validarVehiculoDisponible(dto.getIdVehiculo().getId());
         InteresadoEntity interesado = validarInteresado(dto.getIdInteresado().getId());
@@ -53,8 +54,10 @@ public class PruebaService {
         return prueba;
     }
 
-    public PruebaDto findPruebaById(Integer id)throws ServiceException {
-        return PruebaRepository.findById(id).map(PruebaDto::new).orElseThrow(()-> new ServiceException("Prueba no encontrada"));
+    public PruebaDto findById(Integer id) throws ServiceException {
+        return pruebaRepository.findById(id).map(PruebaDto::new).orElseThrow(() ->
+                new ServiceException("Prueba no encontrada")
+        );
     }
 
     public Iterable<PruebaDto> findAllPruebas()throws ServiceException {
@@ -63,7 +66,7 @@ public class PruebaService {
     }
 
     public List<PruebaDto> getPruebasEnCurso(){
-        return PruebaRepository.findByFechaHoraFinIsNull().stream().map(PruebaDto::new).toList();
+        return pruebaRepository.findByFechaHoraFinIsNull().stream().map(PruebaDto::new).toList();
     }
     public PruebaDto updatePrueba(Integer id, PruebaDto dto)throws ServiceException {
         PruebaEntity prueba = pruebaRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Prueba no encontrada"));
