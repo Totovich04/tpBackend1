@@ -30,6 +30,11 @@ public class NotificacionService {
         this.zonaPeligrosaRepository = zonaPeligrosaRepository;
     }
 
+    public NotificacionPromocionEntity createPromocion(NotificacionPromocionDto promo) {
+        NotificacionPromocionEntity newPromo = buildNotificacionPromocionFromDto(promo);
+        return promocionRepository.save(newPromo);
+    }
+
     public NotificacionZonaPeligrosaEntity createZonaPeligrosa(PosicionDto pos) {
         NotificacionZonaPeligrosaEntity nuevaZonaPeligrosa = buildNotificacionZonaPeligrosaFromDto(pos);
         return zonaPeligrosaRepository.save(nuevaZonaPeligrosa);
@@ -84,4 +89,6 @@ public class NotificacionService {
         zonaPeligrosa.setMensaje(pos.getMessage());
         return zonaPeligrosa;
     }
+
+
 }
