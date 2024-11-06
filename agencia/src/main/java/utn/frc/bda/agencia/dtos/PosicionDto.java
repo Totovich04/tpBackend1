@@ -8,8 +8,14 @@ import java.util.Date;
 @Data
 public class PosicionDto {
     private Integer id;
-    private Integer idVehiculo;
+    private VehiculoDto idVehiculo;
+    private Coordenadas coordenadas;
     private Date fechaHora;
-    private Double latitud;
-    private Double longitud;
+    private String mensaje;
+
+    @Data
+    public static class Coordenadas{
+        private Double lat;
+        private Double lon;
+    }
 }

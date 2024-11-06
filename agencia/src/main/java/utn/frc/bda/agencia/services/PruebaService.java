@@ -68,6 +68,7 @@ public class PruebaService {
     public List<PruebaDto> getPruebasEnCurso(){
         return pruebaRepository.findByFechaHoraFinIsNull().stream().map(PruebaDto::new).toList();
     }
+
     public PruebaDto updatePrueba(Integer id, PruebaDto dto)throws ServiceException {
         PruebaEntity prueba = pruebaRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Prueba no encontrada"));
 
