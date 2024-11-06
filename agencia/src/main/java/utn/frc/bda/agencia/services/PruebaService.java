@@ -33,13 +33,13 @@ public class PruebaService {
     }
 
     public PruebaDto createPrueba(PruebaDto dto) {
-        PruebaEntity nuevaPrueba = buildPruebaFromDto(dto);
+        PruebaEntity nuevaPrueba = crearPruebaDto(dto);
         PruebaEntity prueba = pruebaRepository.save(nuevaPrueba);
         return  new PruebaDto(prueba);
     }
 
 
-    private PruebaEntity buildPruebaFromDto(PruebaDto dto) {
+    private PruebaEntity crearPruebaDto(PruebaDto dto) {
         VehiculoEntity vehiculo = validarVehiculoDisponible(dto.getIdVehiculo().getId());
         InteresadoEntity interesado = validarInteresado(dto.getIdInteresado().getId());
 
@@ -89,7 +89,7 @@ public class PruebaService {
         return  new PruebaDto(updatedPrueba);
     }
 
-    public PruebaEntity finalizarPrueba(Integer id, String comentario){
+    public PruebaDto finalizarPrueba(Integer id, String comentario){
         PruebaEntity prueba = pruebaRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Prueba no encontrada"));
 
         if (prueba.getFechaHoraFin() != null) {
@@ -98,13 +98,13 @@ public class PruebaService {
         prueba.setFechaHoraFin(new Date());
         prueba.setComentarios(comentario);
 
-        return pruebaRepository.save(prueba);
+        return new PruebaDto(pruebaRepository.save(prueba));
     }
 
     public void deletePrueba(Integer id){
         PruebaEntity prueba = pruebaRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Prueba no encontrada"));
-        pruebaRepository.delete(prueba);
 
+        pruebaRepository.delete(prueba);
     }
 
     private VehiculoEntity validarVehiculoDisponible(Integer id) {

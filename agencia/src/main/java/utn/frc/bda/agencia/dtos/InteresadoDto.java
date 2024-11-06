@@ -12,7 +12,7 @@ public class InteresadoDto {
     private Integer id;
 
     private String tipoDocumento;
-    private String Documento;
+    private String documento;
     private String nombre;
     private String apellido;
     private Boolean restringido;
@@ -22,7 +22,7 @@ public class InteresadoDto {
     public InteresadoDto(InteresadoEntity interesado) {
         this.id = interesado.getId();
         this.tipoDocumento = interesado.getTipoDocumento();
-        this.Documento = interesado.getDocumento();
+        this.documento = interesado.getDocumento();
         this.nombre = interesado.getNombre();
         this.apellido = interesado.getApellido();
         this.restringido = interesado.getRestringido();
