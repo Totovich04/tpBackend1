@@ -20,6 +20,7 @@ public class PruebaDto {
     private String comentarios;
 
     public PruebaDto(PruebaEntity prueba) {
+        this.id = prueba.getId();
         this.idVehiculo = new VehiculoDto(prueba.getVehiculo());
         this.idEmpleado = new EmpleadoDto(prueba.getEmpleado());
         this.idInteresado = new InteresadoDto(prueba.getInteresado());
