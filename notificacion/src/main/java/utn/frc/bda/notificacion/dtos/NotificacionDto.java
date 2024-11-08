@@ -1,10 +1,12 @@
 package utn.frc.bda.notificacion.dtos;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
 public class NotificacionDto {
     private Integer id;
     private LocalDateTime fechaNotificacion;
@@ -16,6 +18,4 @@ public class NotificacionDto {
         this.mensaje = mensaje;
     }
 
-    public NotificacionDto() {
-    }
 }
