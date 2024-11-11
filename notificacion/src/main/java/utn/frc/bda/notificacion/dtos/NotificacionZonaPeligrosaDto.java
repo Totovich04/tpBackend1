@@ -15,8 +15,8 @@ public class NotificacionZonaPeligrosaDto extends  NotificacionDto{
 
     public NotificacionZonaPeligrosaDto(NotificacionZonaPeligrosaEntity notificacion) {
         super(notificacion.getId(), notificacion.getFechaNotificacion(), notificacion.getMensaje());
-        this.latActual = notificacion.getLatActual();
-        this.lonActual = notificacion.getLonActual();
+        this.latActual = notificacion.getLatitudActual();
+        this.lonActual = notificacion.getLongitudActual();
         this.nivelPeligro = notificacion.getNivelPeligro();
         this.idVehiculo = notificacion.getIdVehiculo();
     }
