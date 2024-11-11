@@ -11,8 +11,7 @@
 	<groupId>com.tpi</groupId>
 	<artifactId>gateway</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>API Gateway - Agencia de Venta de Vehiculos</name>
-	<description>API Gateway en SpringBoot para el proyecto integrador de Backend</description>
+	<name>API Gateway</name>
 	<url/>
 	<licenses>
 		<license/>
