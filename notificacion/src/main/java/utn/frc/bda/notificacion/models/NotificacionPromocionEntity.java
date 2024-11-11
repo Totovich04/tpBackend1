@@ -1,15 +1,18 @@
 package utn.frc.bda.notificacion.models;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
 @EqualsAndHashCode(callSuper = true)
+@Entity
 @NoArgsConstructor
 @Table(name = "NOTIFICACION_PROMOCION")
 public class NotificacionPromocionEntity extends NotificacionEntity {

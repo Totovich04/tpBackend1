@@ -2,21 +2,22 @@ package utn.frc.bda.notificacion.models;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
+@ToString
+@Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class NotificacionEntity {
+public abstract class NotificacionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime fechaNotificacion;
     private String mensaje;
 

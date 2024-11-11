@@ -1,15 +1,19 @@
 package utn.frc.bda.notificacion.models;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
+
 import utn.frc.bda.notificacion.dtos.PosicionDto;
 
-@Data
+@Getter
+@Setter
+@ToString
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@Entity
 @Table(name = "NOTIFICACION_RADIO_EXCEDIDO")
 public class NotificacionRadioExcedidoEntity extends NotificacionEntity {
     private Double latitudActual;

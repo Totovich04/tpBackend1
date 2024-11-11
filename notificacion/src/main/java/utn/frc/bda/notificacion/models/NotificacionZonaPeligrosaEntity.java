@@ -1,15 +1,19 @@
 package utn.frc.bda.notificacion.models;
 
+import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.*;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import utn.frc.bda.notificacion.dtos.PosicionDto;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@Entity
 @Table(name = "NOTIFICACION_ZONA_PELIGROSA")
 public class NotificacionZonaPeligrosaEntity extends NotificacionEntity{
     private Double latitudActual;
