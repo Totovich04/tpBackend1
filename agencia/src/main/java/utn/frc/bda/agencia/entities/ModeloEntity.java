@@ -1,22 +1,17 @@
 package utn.frc.bda.agencia.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
-import java.util.HashSet;
 import java.util.Set;
 
+@Getter @Setter @NoArgsConstructor @ToString @AllArgsConstructor @EqualsAndHashCode
 @Entity
 @Table(name = "Modelos")
-@Data
 public class ModeloEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String descripcion;
 
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
@@ -24,15 +19,17 @@ public class ModeloEntity {
     @JoinColumn(name = "ID_MARCA")
     private MarcaEntity marca;
 
+    private String descripcion;
+
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "modelo", cascade = CascadeType.PERSIST)
-    private Set<VehiculoEntity> vehiculoEntities = new HashSet<>();
+    private Set<VehiculoEntity> vehiculos;
 
-    public void setMarca(MarcaEntity marca){
+    public void setMarca(MarcaEntity marca) {
         this.marca = marca;
-        if (marca!= null){
-            marca.getModeloEntities().add(this);
+        if (marca != null) {
+            marca.getModelos().add(this);
         }
     }
 }
