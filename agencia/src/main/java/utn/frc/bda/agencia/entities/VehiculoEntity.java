@@ -1,16 +1,15 @@
 package utn.frc.bda.agencia.entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "Vehiculos")
-@Data
+@Data @Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
 public class VehiculoEntity {
 
     @Id
@@ -41,4 +40,5 @@ public class VehiculoEntity {
             modelo.getVehiculoEntities().add(this);
         }
     }
+
 }
