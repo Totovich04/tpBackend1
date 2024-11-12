@@ -22,36 +22,24 @@ public class GWConfig {
                                         @Value("${tpi-agencia-api-gw.microservicio-agencia}") String uriAgencia,
                                         @Value("${tpi-agencia-api-gw.microservicio-notificaciones}") String uriNotificaciones) {
         return builder.routes()
-                .route(p -> p.path("api/v1/agencia/**").uri(uriAgencia))
-                .route(p -> p.path("api/v1/notificaciones/**").uri(uriNotificaciones))
+                .route(p -> p.path("api/v1/agencia/**").filters(f-> f.stripPrefix(3)).uri(uriAgencia))
+                .route(p -> p.path("api/v1/notificaciones/**").filters(f-> f.stripPrefix(3)).uri(uriNotificaciones))
                 .build();
     }
 
     @Bean
     public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
+
         http.authorizeExchange(exchanges -> exchanges
 
-                .pathMatchers("/api/v1/agencia/pruebas/new")
-                .hasRole("EMPLEADO")
+                        .pathMatchers("/api/v1/agencia/pruebas/new").hasRole("EMPLEADO")
+                        .pathMatchers("/api/v1/notificaciones/promocion").hasRole("EMPLEADO")
+                        .pathMatchers("/api/v1/agencia/pruebas/posicion").hasRole("VEHICULO")
+                        .pathMatchers("/api/v1/agencia/reportes/**").hasRole("ADMIN")
 
-                .pathMatchers("/api/v1/notificaciones/promocion")
-                .hasRole("EMPLEADO")
-
-                .pathMatchers("/api/v1/pruebas/posicion")
-                .hasRole("USUARIO")
-
-                .pathMatchers("/api/v1/agencia/reportes/**")
-                .hasRole("ADMINISTRADOR")
-
-                .pathMatchers("/api/v1/agencia/pruebas/**")
-                .permitAll()
-
-                .pathMatchers("/api/v1/agencia/**")
-                .permitAll()
 
                 .anyExchange()
-                .authenticated()
-        )
+                .authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable);
         return http.build();
@@ -59,8 +47,8 @@ public class GWConfig {
 
     @Bean
     public ReactiveJwtAuthenticationConverter jwtAuthenticationConverter() {
-        var jwtAuthenticationConverter = new ReactiveJwtAuthenticationConverter();
-        var grantedAuhoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        ReactiveJwtAuthenticationConverter jwtAuthenticationConverter = new ReactiveJwtAuthenticationConverter();
+        JwtGrantedAuthoritiesConverter grantedAuhoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
         grantedAuhoritiesConverter.setAuthoritiesClaimName("authorities");
 
