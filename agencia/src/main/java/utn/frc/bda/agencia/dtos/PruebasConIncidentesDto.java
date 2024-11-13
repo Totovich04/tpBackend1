@@ -5,10 +5,10 @@ import lombok.Data;
 @Data
 public class PruebasConIncidentesDto {
     private PruebaDto prueba;
-    private Integer totalIncidentes;
+    private Integer cantidadIncidentes;
 
-    public PruebasConIncidentesDto(PruebaDto prueba, Integer totalIncidentes) {
+    public PruebasConIncidentesDto(PruebaDto prueba, Integer cantidadIncidentes) {
         this.prueba = prueba;
-        this.totalIncidentes = totalIncidentes;
+        this.cantidadIncidentes = cantidadIncidentes;
     }
 }

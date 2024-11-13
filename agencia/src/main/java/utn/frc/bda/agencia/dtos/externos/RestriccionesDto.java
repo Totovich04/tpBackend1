@@ -9,9 +9,9 @@ import java.util.List;
 @AllArgsConstructor
 public class RestriccionesDto {
 
-    private Coordenadas coordenadas;
-    private double radioAdmitido;
-    private List<ZonaRestringida> zonaRestringidas;
+    private Coordenadas coordenadasAgencia;
+    private double radioAdmitidoKm;
+    private List<ZonaRestringida> zonasRestringidas;
 
     @Data
     public static class Coordenadas {

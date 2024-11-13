@@ -13,15 +13,19 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(callSuper = true)
 public class IncidentesResponse extends ReportResponse {
     private Integer totalIncidentes;
-    private List<PruebasConIncidentesDto> pruebasConIncidentesDtos;
+    private List<PruebasConIncidentesDto> pruebasConIncidentes;
 
-    public IncidentesResponse(List<PruebaDto> pruebaDtos){
-        super("Incidentes en pruebas", "Incidentes en pruebas que tienen al menos un incidente");
-        this.totalIncidentes = pruebaDtos.size();
+    public IncidentesResponse(List<PruebaDto> pruebasConIncidentes) {
+        super("Reporte de incidentes", "Reporte de las pruebas que tienen accidentes registrados.");
+        this.totalIncidentes = pruebasConIncidentes.size();
 
-        Map<Integer, Long> incidentesPorPrueba = pruebaDtos.stream()
-                .collect(Collectors.groupingBy(PruebaDto::getId, Collectors.counting()));
+        Map<Integer, List<PruebaDto>> pruebasAgrupadas = pruebasConIncidentes.stream().collect(Collectors.groupingBy(PruebaDto::getId));
 
-        this.pruebasConIncidentesDtos = incidentesPorPrueba.entrySet().stream().map(entry -> new PruebasConIncidentesDto(pruebaDtos.stream().filter(pruebaDto -> pruebaDto.getId().equals(entry.getKey())).findFirst().orElse(null), entry.getValue().intValue())).collect(Collectors.toList());
+        this.pruebasConIncidentes = pruebasAgrupadas.entrySet().stream()
+                .map(entry -> new PruebasConIncidentesDto(
+                        entry.getValue().get(0),
+                        entry.getValue().size()
+                ))
+                .collect(Collectors.toList());
     }
 }

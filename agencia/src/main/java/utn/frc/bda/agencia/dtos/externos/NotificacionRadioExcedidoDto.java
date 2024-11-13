@@ -4,10 +4,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper=true)
+@EqualsAndHashCode(callSuper = true)
 public class NotificacionRadioExcedidoDto extends NotificacionDto {
     private double latActual;
-    private double lngActual;
+    private double lonActual;
     private Integer idVehiculo;
 
 }

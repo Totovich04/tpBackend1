@@ -7,10 +7,10 @@ import java.util.Date;
 
 @Data
 public class PosicionDto {
-    private Integer id;
-    private VehiculoDto idVehiculo;
+    private int id;
+    private VehiculoDto vehiculo;
     private Coordenadas coordenadas;
-    private Date fechaHora;
+//    private Date fechaHora;
     private String mensaje;
 
     @Data

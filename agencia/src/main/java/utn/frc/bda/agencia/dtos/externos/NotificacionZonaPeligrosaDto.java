@@ -8,7 +8,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper=true)
 public class NotificacionZonaPeligrosaDto extends NotificacionDto{
     private double latActual;
-    private double lngActual;
+    private double lonActual;
     private String nivelPeligro;
     private Integer idVehiculo;
 }

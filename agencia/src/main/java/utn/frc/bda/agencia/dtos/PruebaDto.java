@@ -11,19 +11,19 @@ import java.util.Date;
 @AllArgsConstructor
 public class PruebaDto {
 
-    private Integer id;
-    private VehiculoDto idVehiculo;
-    private InteresadoDto idInteresado;
-    private EmpleadoDto idEmpleado;
+    private int id;
+    private VehiculoDto vehiculo;
+    private EmpleadoDto empleado;
+    private InteresadoDto interesado;
     private Date fechaHoraInicio;
     private Date fechaHoraFin;
     private String comentarios;
 
     public PruebaDto(PruebaEntity prueba) {
         this.id = prueba.getId();
-        this.idVehiculo = new VehiculoDto(prueba.getVehiculo());
-        this.idEmpleado = new EmpleadoDto(prueba.getEmpleado());
-        this.idInteresado = new InteresadoDto(prueba.getInteresado());
+        this.vehiculo = new VehiculoDto(prueba.getVehiculo());
+        this.empleado = new EmpleadoDto(prueba.getEmpleado());
+        this.interesado = new InteresadoDto(prueba.getInteresado());
         this.fechaHoraInicio = prueba.getFechaHoraInicio();
         this.fechaHoraFin = prueba.getFechaHoraFin();
         this.comentarios = prueba.getComentarios();

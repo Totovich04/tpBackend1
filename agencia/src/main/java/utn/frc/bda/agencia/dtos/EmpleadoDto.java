@@ -1,9 +1,11 @@
 package utn.frc.bda.agencia.dtos;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import utn.frc.bda.agencia.entities.EmpleadoEntity;
 
 @Data
+@AllArgsConstructor
 public class EmpleadoDto {
     private Integer legajo;
     private String nombre;

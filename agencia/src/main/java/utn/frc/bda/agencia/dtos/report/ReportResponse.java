@@ -1,23 +1,21 @@
 package utn.frc.bda.agencia.dtos.report;
 
-import lombok.AllArgsConstructor;
+
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
-@AllArgsConstructor
+@NoArgsConstructor
 public abstract class ReportResponse {
     private String nombreReporte;
     private String descripcionReporte;
-    private Date fechaCreacion;
+    private Date fechaCreacionReporte;
 
-    public ReportResponse(){
-        this.fechaCreacion = new Date();
-    }
     public ReportResponse(String nombreReporte, String descripcionReporte) {
         this.nombreReporte = nombreReporte;
         this.descripcionReporte = descripcionReporte;
-        this.fechaCreacion = new Date();
+        this.fechaCreacionReporte = new Date();
     }
 }

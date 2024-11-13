@@ -12,12 +12,12 @@ import java.util.List;
 public abstract class NotificacionDto {
     private Integer id;
     private List<String> reciverEmails;
-    private LocalDateTime fecha;
+    private LocalDateTime fechaNotificacion;
     private String mensaje;
 
-    public NotificacionDto(Integer id, List<String> reciverEmails, LocalDateTime fecha, String mensaje) {
+    public NotificacionDto(Integer id, List<String> reciverEmails, LocalDateTime fechaNotificacion, String mensaje) {
         this.id = id;
-        this.fecha = fecha;
+        this.fechaNotificacion = fechaNotificacion;
         this.mensaje = mensaje;
     }
 }

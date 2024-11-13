@@ -5,7 +5,4 @@ import lombok.Data;
 
 @Data
 public class ModeloDto {
-    private Integer id;
-    private Integer idMarca;
-    private String descripcion;
 }
