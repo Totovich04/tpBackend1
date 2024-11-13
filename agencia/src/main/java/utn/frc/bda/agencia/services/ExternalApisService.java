@@ -1,35 +1,42 @@
 package utn.frc.bda.agencia.services;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import utn.frc.bda.agencia.dtos.externos.NotificacionRadioExcedidoDto;
-import utn.frc.bda.agencia.dtos.externos.RestriccionesDto;
+import utn.frc.bda.agencia.dtos.PosicionDto;
+import utn.frc.bda.agencia.dtos.externos.NotificacionDto;
 
-import java.util.Arrays;
-import java.util.List;
+
+import java.time.LocalDateTime;
+import java.util.Collections;
+
 
 @Service
 public class ExternalApisService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate;
+    private final String notificacionUrl = "http://localhost:8080/notificaciones";
 
-    @Value("${agencia.restricciones.url}")
-    private String restriccionesUrl;
-
-    @Value("${notificacion.notificaciones.url}")
-    private String notificacionesUrl;
-
-    @Cacheable("restrictionsApiCache")
-    public RestriccionesDto getRestricciones(){
-        return restTemplate.getForObject(restriccionesUrl, RestriccionesDto.class);
+    @Autowired
+    public ExternalApisService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
 
-    public List<NotificacionRadioExcedidoDto> getNotificacionesRadioExcedido(){
-        NotificacionRadioExcedidoDto[] notiArray = restTemplate.getForObject(notificacionesUrl+"/notificaciones/seguridad/radio-excedido", NotificacionRadioExcedidoDto[].class);
+    public void enviarMensajeRadioExcedido(PosicionDto posicion) {
+        NotificacionDto notificacionDto = new NotificacionDto(
+                null, LocalDateTime.now(), "El vehiculo excedio el radio permitido"+ posicion);
+    notificacionDto.setReciverEmails(Collections.emptyList());
+    enviarNotficacion(notificacionDto);
+    }
 
-        assert notiArray != null;
-        return Arrays.asList(notiArray);
+    public void enviarMensajeZonaPeligrosa(PosicionDto posicion){
+        NotificacionDto notificacionDto = new NotificacionDto(
+                null, LocalDateTime.now(), "El vehiculo ingreso a una zona peligrosa"+ posicion);
+        notificacionDto.setReciverEmails(Collections.emptyList());
+        enviarNotficacion(notificacionDto);
+    }
+
+    private void enviarNotficacion(NotificacionDto notificacionDto){
+        restTemplate.postForObject(notificacionUrl, notificacionDto, NotificacionDto.class);
     }
 }

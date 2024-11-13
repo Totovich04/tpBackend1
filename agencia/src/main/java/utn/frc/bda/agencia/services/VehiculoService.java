@@ -18,18 +18,19 @@ public class VehiculoService {
     private final VehiculoRepository vehiculoRepository;
     private final PruebaRepository pruebaRepository;
     private final PosicionRepository posicionRepository;
-    private final ExternalApisService externalApisService;
+    private final RestriccionesService restriccionesService;
+    private  ExternalApisService externalApisService;
 
     @Autowired
-    public VehiculoService(VehiculoRepository vrepository, PruebaRepository pruebaRepository, PosicionRepository posicionRepository, ExternalApisService externalApisService) {
+    public VehiculoService(VehiculoRepository vrepository, PruebaRepository pruebaRepository, PosicionRepository posicionRepository, RestriccionesService restriccionesService, ExternalApisService externalApisService) {
         this.vehiculoRepository = vrepository;
         this.pruebaRepository = pruebaRepository;
         this.posicionRepository = posicionRepository;
-        this.externalApisService = externalApisService;
+        this.restriccionesService = restriccionesService;
     }
 
     public PosicionDto procesarPosicion(PosicionDto posicionDto) {
-        RestriccionesDto restriccionesDto = externalApisService.getRestricciones();
+        RestriccionesDto restriccionesDto = restriccionesService.getRestricciones();
 
         if (restriccionesDto == null) {
             throw new IllegalStateException("No se pudieron obtener las restricciones.");
@@ -39,11 +40,13 @@ public class VehiculoService {
 
         if (posicionFueraRadio(posicionDtoRespuesta, restriccionesDto)){
             posicionDtoRespuesta.setMensaje("El vehiculo se encuentra fuera del radio permitido!.");
+            externalApisService.enviarMensajeRadioExcedido(posicionDtoRespuesta);
             return posicionDtoRespuesta;
         }
 
         if (zonaRestringida(posicionDtoRespuesta, restriccionesDto)){
             posicionDtoRespuesta.setMensaje("El vehiculo se encuentra en una Zona restringida!");
+            externalApisService.enviarMensajeZonaPeligrosa(posicionDtoRespuesta);
             return posicionDtoRespuesta;
         }
 
@@ -53,14 +56,14 @@ public class VehiculoService {
 
 
     private boolean posicionFueraRadio(PosicionDto posicionDto, RestriccionesDto restriccionesDto) {
-        double distance = Math.sqrt(Math.pow(posicionDto.getCoordenadas().getLat() - restriccionesDto.getCoordenadas().getLat(), 2)
-                + Math.pow(posicionDto.getCoordenadas().getLon() - restriccionesDto.getCoordenadas().getLon(), 2));
+        double distance = Math.sqrt(Math.pow(posicionDto.getCoordenadas().getLat() - restriccionesDto.getCoordenadasAgencia().getLat(), 2)
+                + Math.pow(posicionDto.getCoordenadas().getLon() - restriccionesDto.getCoordenadasAgencia().getLon(), 2));
 
-        return distance > restriccionesDto.getRadioAdmitido();
+        return distance > restriccionesDto.getRadioAdmitidoKm();
     }
 
     private boolean zonaRestringida(PosicionDto posicionDto, RestriccionesDto restriccionesDto) {
-        return restriccionesDto.getZonaRestringidas().stream().anyMatch(zona -> {
+        return restriccionesDto.getZonasRestringidas().stream().anyMatch(zona -> {
             double latVehiculo = posicionDto.getCoordenadas().getLat();
             double lonVehiculo = posicionDto.getCoordenadas().getLon();
             double latNoroeste = zona.getNoroeste().getLat();
@@ -74,9 +77,9 @@ public class VehiculoService {
     }
     private PosicionDto construirPosicion(PosicionDto posicionDto, PosicionEntity posicion) {
         posicionDto.setId(posicion.getId());
-        posicionDto.getIdVehiculo().setPatente(posicion.getVehiculo().getPatente());
-        posicionDto.getIdVehiculo().setAnio(posicion.getVehiculo().getAnio());
-        posicionDto.getIdVehiculo().setIdModelo(posicion.getVehiculo().getModelo().getId());
+        posicionDto.getVehiculo().setPatente(posicion.getVehiculo().getPatente());
+        posicionDto.getVehiculo().setAnio(posicion.getVehiculo().getAnio());
+        posicionDto.getVehiculo().setIdModelo(posicion.getVehiculo().getModelo().getId());
         return posicionDto;
     }
 
@@ -89,7 +92,7 @@ public class VehiculoService {
     }
 
     private PosicionEntity crearPosicionDto(PosicionDto posicionDto) {
-        VehiculoEntity vehiculo = validarVehiculo(posicionDto.getIdVehiculo().getId());
+        VehiculoEntity vehiculo = validarVehiculo(posicionDto.getVehiculo().getId());
 
         PosicionEntity posicion = new PosicionEntity();
         posicion.setVehiculo(vehiculo);

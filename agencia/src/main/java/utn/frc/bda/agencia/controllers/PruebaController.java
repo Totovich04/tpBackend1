@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import utn.frc.bda.agencia.dtos.PruebaDto;
+import utn.frc.bda.agencia.entities.PruebaEntity;
 import utn.frc.bda.agencia.services.PruebaService;
 
 import java.util.List;
@@ -27,14 +28,14 @@ public class PruebaController {
     @GetMapping("/{id}")
     public ResponseEntity<PruebaDto> getPruebaById(@PathVariable Integer id){
         try {
-            PruebaDto pruebaDto = pruebaService.findById(id);
+            PruebaDto pruebaDto = pruebaService.buscarPorId(id);
             return ResponseEntity.ok(pruebaDto);
         } catch (ServiceException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
     }
 
-    @GetMapping("/enCurso")
+    @GetMapping("/en-curso")
     public ResponseEntity<Iterable<PruebaDto>> getAllPruebasEnCurso(){
         List<PruebaDto> pruebaDtos = pruebaService.getPruebasEnCurso();
         if(pruebaDtos.isEmpty()){
@@ -43,8 +44,8 @@ public class PruebaController {
         return ResponseEntity.ok(pruebaDtos);
     }
 
-    @PostMapping("/nuevo")
-    public ResponseEntity<?> crearPrueba(@RequestBody PruebaDto pruebaDto){
+    @PostMapping("/new")
+    public ResponseEntity<?> create(@RequestBody PruebaDto pruebaDto){
         try{
             PruebaDto prueba = pruebaService.createPrueba(pruebaDto);
             return  ResponseEntity.ok(prueba);
@@ -66,7 +67,7 @@ public class PruebaController {
     @PutMapping("/finalizar/{id}")
     public ResponseEntity<?> finalizarPrueba(@PathVariable Integer id, @RequestBody PruebaDto pruebaDto){
         try {
-            PruebaDto prueba = pruebaService.finalizarPrueba(id, pruebaDto.getComentarios());
+            PruebaEntity prueba = pruebaService.finalizarPrueba(id, pruebaDto.getComentarios());
             return ResponseEntity.ok(prueba);
         }catch (ServiceException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -77,7 +78,7 @@ public class PruebaController {
     public ResponseEntity<?> eliminarPrueba(@PathVariable Integer id){
         try {
             pruebaService.deletePrueba(id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }catch (ServiceException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }

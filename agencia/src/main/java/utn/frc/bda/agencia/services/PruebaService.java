@@ -14,6 +14,7 @@ import utn.frc.bda.agencia.repositories.PruebaRepository;
 import utn.frc.bda.agencia.repositories.VehiculoRepository;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
@@ -38,12 +39,82 @@ public class PruebaService {
         return  new PruebaDto(prueba);
     }
 
+    public PruebaDto buscarPorId(Integer id){
+        return pruebaRepository.findById(id).map(PruebaDto::new).orElseThrow(() -> new ServiceException("No se encontro la prueba con id: " + id));
+    }
 
-    private PruebaEntity crearPruebaDto(PruebaDto dto) {
-        VehiculoEntity vehiculo = validarVehiculoDisponible(dto.getIdVehiculo().getId());
-        InteresadoEntity interesado = validarInteresado(dto.getIdInteresado().getId());
+    public Iterable<PruebaDto> findAllPruebas() {
+        Iterable<PruebaEntity> pruebas = pruebaRepository.findAll();
+        return StreamSupport.stream(pruebas.spliterator(), false).map(PruebaDto::new).toList();
+    }
 
-        EmpleadoEntity empleado = empleadoRepository.findById(dto.getIdEmpleado().getLegajo()).orElseThrow(()-> new IllegalArgumentException("Empleado no encontrado"));
+    public List<PruebaDto> getPruebasEnCurso(){
+        return pruebaRepository.findByFechaHoraFinIsNull().stream().map(PruebaDto::new).toList();
+    }
+
+    public PruebaDto updatePrueba(Integer id, PruebaDto dto){
+        PruebaEntity prueba = pruebaRepository.findById(id).orElseThrow(() -> new ServiceException("No se encontro la prueba con id: " + id));
+
+        prueba.setId(id);
+        prueba.setFechaHoraInicio(dto.getFechaHoraInicio());
+
+        VehiculoEntity vehiculo = vehiculoRepository.findById(dto.getVehiculo().getId()).orElseThrow(
+                () -> new ServiceException("No se encontro el vehiculo con id: " + dto.getVehiculo().getId()));
+        prueba.setVehiculo(vehiculo);
+
+        EmpleadoEntity empleado = empleadoRepository.findById(dto.getEmpleado().getLegajo()).orElseThrow(
+                () -> new ServiceException("No se encontro el empleado con legajo: " + dto.getEmpleado().getLegajo()));
+        prueba.setEmpleado(empleado);
+
+        InteresadoEntity interesado = interesadoRepository.findById(dto.getInteresado().getId()).orElseThrow(
+                () -> new ServiceException("No se encontro el interesado con id: " + dto.getInteresado().getId()));
+        prueba.setInteresado(interesado);
+
+        PruebaEntity pruebaActualizada = pruebaRepository.save(prueba);
+
+        return new PruebaDto(pruebaActualizada);
+    }
+
+    public PruebaEntity finalizarPrueba(Integer id, String comentario){
+        PruebaEntity prueba = pruebaRepository.findById(id).orElseThrow(() -> new ServiceException("No se encontro la prueba con el id: " + id));
+
+        if (prueba.getFechaHoraFin() != null){
+            throw new ServiceException("La prueba ya fue finalizada");
+        }
+
+        prueba.setFechaHoraFin(new Date());
+        prueba.setComentarios(comentario);
+
+        return pruebaRepository.save(prueba);
+    }
+
+    private VehiculoEntity validarVehiculoDisponible(Integer id){
+        VehiculoEntity vehiculo = vehiculoRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("No se encontro el vehiculo"));
+
+        if (pruebaRepository.existsByVehiculoIdAndFechaHoraFinIsNull(id)){
+            throw new IllegalArgumentException("El vehiculo no esta disponible en el momento.");
+        }
+        return vehiculo;
+    }
+
+    private InteresadoEntity validarInteresado(Integer id){
+        InteresadoEntity interesado = interesadoRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("No se encontro el interesado"));
+
+        if (interesado.getFechaVtoLicencia().before(new Date())){
+            throw new IllegalArgumentException("La licencia del interesado esta vencida");
+        }
+
+        if (interesado.getRestringido()){
+            throw new IllegalArgumentException("El interesado no puede realizar pruebas");
+        }
+
+        return interesado;
+    }
+
+    private PruebaEntity crearPruebaDto(PruebaDto dto){
+        VehiculoEntity vehiculo = validarVehiculoDisponible(dto.getVehiculo().getId());
+        InteresadoEntity interesado = validarInteresado(dto.getInteresado().getId());
+        EmpleadoEntity empleado = empleadoRepository.findById(dto.getEmpleado().getLegajo()).orElseThrow(() -> new IllegalArgumentException("No se encontro el empleado"));
 
         PruebaEntity prueba = new PruebaEntity();
         prueba.setVehiculo(vehiculo);
@@ -54,77 +125,8 @@ public class PruebaService {
         return prueba;
     }
 
-    public PruebaDto findById(Integer id) throws ServiceException {
-        return pruebaRepository.findById(id).map(PruebaDto::new).orElseThrow(() ->
-                new ServiceException("Prueba no encontrada")
-        );
-    }
-
-    public Iterable<PruebaDto> findAllPruebas()throws ServiceException {
-        Iterable<PruebaEntity> pruebas = pruebaRepository.findAll();
-        return StreamSupport.stream(pruebas.spliterator(),false).map(PruebaDto::new).toList();
-    }
-
-    public List<PruebaDto> getPruebasEnCurso(){
-        return pruebaRepository.findByFechaHoraFinIsNull().stream().map(PruebaDto::new).toList();
-    }
-
-    public PruebaDto updatePrueba(Integer id, PruebaDto dto)throws ServiceException {
-        PruebaEntity prueba = pruebaRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Prueba no encontrada"));
-
-        prueba.setId(id);
-        prueba.setFechaHoraInicio(dto.getFechaHoraInicio());
-
-        VehiculoEntity vehiculo = vehiculoRepository.findById(dto.getIdVehiculo().getId()).orElseThrow(()-> new IllegalArgumentException("Vehiculo no encontrado"));
-        prueba.setVehiculo(vehiculo);
-
-        EmpleadoEntity empleado = empleadoRepository.findById(dto.getIdEmpleado().getLegajo()).orElseThrow(()-> new IllegalArgumentException("Empleado no encontrado"));
-        prueba.setEmpleado(empleado);
-
-        InteresadoEntity interesado = interesadoRepository.findById(dto.getIdInteresado().getId()).orElseThrow(()-> new IllegalArgumentException("Interesado no encontrado"));
-        prueba.setInteresado(interesado);
-
-        PruebaEntity updatedPrueba = pruebaRepository.save(prueba);
-
-        return  new PruebaDto(updatedPrueba);
-    }
-
-    public PruebaDto finalizarPrueba(Integer id, String comentario){
-        PruebaEntity prueba = pruebaRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Prueba no encontrada"));
-
-        if (prueba.getFechaHoraFin() != null) {
-            throw new IllegalStateException("La prueba ya finalizó.");
-        }
-        prueba.setFechaHoraFin(new Date());
-        prueba.setComentarios(comentario);
-
-        return new PruebaDto(pruebaRepository.save(prueba));
-    }
-
     public void deletePrueba(Integer id){
-        PruebaEntity prueba = pruebaRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Prueba no encontrada"));
-
+        PruebaEntity prueba = pruebaRepository.findById(id).orElseThrow(() -> new ServiceException("No se encontro la prueba con id: " + id));
         pruebaRepository.delete(prueba);
-    }
-
-    private VehiculoEntity validarVehiculoDisponible(Integer id) {
-        VehiculoEntity vehiculo = vehiculoRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Vehiculo no encontrado"));
-
-        if (pruebaRepository.existsByVehiculoIdAndFechaHoraFinIsNull(id)){
-            throw new IllegalArgumentException("Vehiculo no disponible");
-        }
-        return vehiculo;
-    }
-
-    private InteresadoEntity validarInteresado(Integer id) {
-        InteresadoEntity interesado = interesadoRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Interesado no encontrado"));
-
-        if (interesado.getFechaVtoLicencia().before(new Date())){
-            throw new IllegalArgumentException("Interesado no habilitado.");
-        }
-        if (interesado.getRestringido()){
-            throw new IllegalArgumentException("Interesado restringido.");
-        }
-        return interesado;
     }
 }

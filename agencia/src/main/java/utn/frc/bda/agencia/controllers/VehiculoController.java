@@ -20,7 +20,7 @@ public class VehiculoController {
         this.vehiculoService = vehiculoService;
     }
 
-    @PostMapping("/posicion/nueva")
+    @PostMapping("/posicion/new")
     public ResponseEntity<?> create(@RequestBody PosicionDto posicionDto) {
         try {
             PosicionDto posicion = vehiculoService.procesarPosicion(posicionDto);

@@ -18,44 +18,61 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class GWConfig {
 
     @Bean
-    public RouteLocator configurarRutas(RouteLocatorBuilder builder,
-                                        @Value("${tpi-agencia-api-gw.microservicio-agencia}") String uriAgencia,
-                                        @Value("${tpi-agencia-api-gw.microservicio-notificaciones}") String uriNotificaciones) {
+    public RouteLocator routeLocator(RouteLocatorBuilder builder,
+                                     @Value("${tpi-agencia-api-gw.microservicio-agencia}") String uriAgencia,
+                                     @Value("${tpi-agencia-api-gw.microservicio-notificaciones}") String uriNotificaciones) {
+
         return builder.routes()
-                .route(p -> p.path("api/v1/agencia/**").filters(f-> f.stripPrefix(3)).uri(uriAgencia))
-                .route(p -> p.path("api/v1/notificaciones/**").filters(f-> f.stripPrefix(3)).uri(uriNotificaciones))
+                // Ruta para el microservicio "agencia"
+                .route("ruta-agencia", r -> r
+                        .path("/api/v1/agencia/**")  // Se aplica a cualquier solicitud que comience con /api/v1/agencia
+                        .filters(f -> f.stripPrefix(3))  // Elimina los tres primeros segmentos del path ("/api/v1/agencia") antes de redirigir
+                        .uri(uriAgencia))  // Redirige a la URI del microservicio "agencia"
+
+                // Ruta para el microservicio "notificaciones"
+                .route("ruta-notificaciones", r -> r
+                        .path("/api/v1/notificaciones/**")  // Se aplica a cualquier solicitud que comience con /api/v1/notificaciones
+                        .filters(f -> f.stripPrefix(3))  // Elimina los tres primeros segmentos del path ("/api/v1/notificaciones") antes de redirigir
+                        .uri(uriNotificaciones))  // Redirige a la URI del microservicio "notificaciones"
                 .build();
     }
 
     @Bean
-    public SecurityWebFilterChain filterChain(ServerHttpSecurity http) {
-
-        http.authorizeExchange(exchanges -> exchanges
-
+    public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
+        http
+                .authorizeExchange(exchange -> exchange
+                        // Rutas con permisos específicos
                         .pathMatchers("/api/v1/agencia/pruebas/new").hasRole("EMPLEADO")
                         .pathMatchers("/api/v1/notificaciones/promocion").hasRole("EMPLEADO")
                         .pathMatchers("/api/v1/agencia/pruebas/posicion").hasRole("VEHICULO")
                         .pathMatchers("/api/v1/agencia/reportes/**").hasRole("ADMIN")
 
+                        // Requiere autenticación para cualquier otra ruta
+                        .anyExchange().authenticated()
+                )
+                // Configuración de autenticación mediante JWT como servidor de recursos OAuth2
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
 
-                .anyExchange()
-                .authenticated())
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
+                // Desactiva CSRF (útil para aplicaciones sin interfaz web)
                 .csrf(ServerHttpSecurity.CsrfSpec::disable);
+
         return http.build();
     }
 
     @Bean
     public ReactiveJwtAuthenticationConverter jwtAuthenticationConverter() {
-        ReactiveJwtAuthenticationConverter jwtAuthenticationConverter = new ReactiveJwtAuthenticationConverter();
-        JwtGrantedAuthoritiesConverter grantedAuhoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        // Converter que extrae roles de las "claims" del token JWT
+        ReactiveJwtAuthenticationConverter jwtConverter = new ReactiveJwtAuthenticationConverter();
 
-        grantedAuhoritiesConverter.setAuthoritiesClaimName("authorities");
+        // Configuración de cómo extraer roles
+        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        authoritiesConverter.setAuthoritiesClaimName("authorities");  // Define el nombre del campo en el JWT que contiene los roles
+        authoritiesConverter.setAuthorityPrefix("ROLE_");  // Prefijo a añadir a cada rol
 
-        grantedAuhoritiesConverter.setAuthorityPrefix("ROLE_");
+        // Asigna el converter configurado para adaptar las autoridades
+        jwtConverter.setJwtGrantedAuthoritiesConverter(
+                new ReactiveJwtGrantedAuthoritiesConverterAdapter(authoritiesConverter));
 
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(
-                new ReactiveJwtGrantedAuthoritiesConverterAdapter(grantedAuhoritiesConverter));
-        return jwtAuthenticationConverter;
+        return jwtConverter;
     }
 }

@@ -19,71 +19,68 @@ import java.util.stream.Collectors;
 @Service
 public class ReporteService {
 
-    private  final ExternalApisService externalApisService;
+    private final PruebaRepository pruebaRepository;
     private final VehiculoRepository vehiculoRepository;
     private final PosicionRepository posicionRepository;
-    private final PruebaRepository pruebaRepository;
+    private final RestriccionesService restriccionesService;
 
     @Autowired
-    public ReporteService(ExternalApisService exService, VehiculoRepository veRepo, PosicionRepository poRepo, PruebaRepository prRepo) {
-        this.externalApisService = exService;
+    public ReporteService(RestriccionesService resService, VehiculoRepository veRepo, PosicionRepository poRepo, PruebaRepository prRepo) {
         this.vehiculoRepository = veRepo;
         this.posicionRepository = poRepo;
         this.pruebaRepository = prRepo;
+        this.restriccionesService = resService;
     }
 
-    public DistanciaVehiculoResponse calcularDistanciaVehiculo(Integer idVehiculo, Date fechaDesde, Date fechaHasta) {
-        List<PosicionEntity> posicionEntities = posicionRepository.findByVehiculoAndFechaHoraBetween(idVehiculo, fechaDesde, fechaHasta);
-        VehiculoEntity vehiculo = vehiculoRepository.findById(idVehiculo).orElse(null);
-        Double distanciaTotal = 0.0;
+    public DistanciaVehiculoResponse calcularDistanciaRecorrida(Integer idVehiculo, Date fechaInicio, Date fechaFin) {
+        List<PosicionEntity> posiciones = posicionRepository.findByVehiculoAndFechaHoraBetween(idVehiculo, fechaInicio, fechaFin);
+        VehiculoEntity vehiculo = vehiculoRepository.findById(idVehiculo).orElseThrow(() -> new RuntimeException("No se encontro el vehiculo con id: " + idVehiculo));
 
-        if (posicionEntities.isEmpty()){
-            DistanciaVehiculoResponse response =new DistanciaVehiculoResponse(vehiculo, fechaDesde, fechaHasta, distanciaTotal);
+        Double distancia = 0.0;
+
+        if (posiciones.isEmpty()){
+            DistanciaVehiculoResponse response = new DistanciaVehiculoResponse(vehiculo,fechaInicio,fechaFin,distancia);
         }
 
-        for (int i = 0; i < posicionEntities.size() - 1; i++) {
-            PosicionEntity posicionActual = posicionEntities.get(i);
-            PosicionEntity posicionSiguiente = posicionEntities.get(i + 1);
-            distanciaTotal += calcularDistancia(posicionActual.getLatitud(), posicionActual.getLongitud(), posicionSiguiente.getLatitud(), posicionSiguiente.getLongitud());
+        for (int i = 0; i < posiciones.size() - 1; i++) {
+            PosicionEntity pos1 = posiciones.get(i);
+            PosicionEntity pos2 = posiciones.get(i + 1);
+            distancia += calcularDistanciaEuclidea(pos1.getLatitud(),pos1.getLongitud(), pos2.getLatitud(),pos2.getLongitud());
         }
-        return new DistanciaVehiculoResponse(vehiculo, fechaDesde, fechaHasta, distanciaTotal);
+        DistanciaVehiculoResponse response = new DistanciaVehiculoResponse(vehiculo,fechaInicio,fechaFin,distancia);
+        return response;
     }
 
-    private Double calcularDistancia(Double latitud, Double longitud, Double latitud1, Double longitud1) {
-            Double dX = latitud1 - latitud;
-            Double dY = longitud1 - longitud;
-            return Math.sqrt(dX * dX + dY * dY);
+    public List<PruebaDto> obtenerPruebasVehiculo(Integer idVehiculo){
+        VehiculoEntity vehiculo = vehiculoRepository.findById(idVehiculo).orElseThrow(() -> new RuntimeException("No se encontro el vehiculo con id: " + idVehiculo));
+
+        return  vehiculo.getPruebas().stream().map(pruebaEntity -> new PruebaDto(pruebaEntity)).toList();
     }
 
-    public List<PruebaDto> getPruebasVehiculo(Integer idVehiculo) {
-        VehiculoEntity vehiculo = vehiculoRepository.findById(idVehiculo).orElse(null);
+    private Double calcularDistanciaEuclidea(Double lat1, Double lon1, Double lat2, Double lon2){
+        Double dX = lat2 - lat1;
+        Double dY = lon2 - lon1;
 
-        return vehiculo.getPruebaEntities().stream().map(pruebaEntity -> new PruebaDto(pruebaEntity)).toList();
-    }
-
-    public List<PruebaDto> obtenerIncidentes(){
-        List<NotificacionRadioExcedidoDto> notificaciones = externalApisService.getNotificacionesRadioExcedido();
-
-        return notificaciones.stream().map(this::buscarPruebaDeNotificacion).collect(Collectors.toList());
+        return Math.sqrt(dX*dX + dY*dY);
     }
 
     private PruebaDto buscarPruebaDeNotificacion(NotificacionRadioExcedidoDto notificacion){
-        PruebaEntity prueba = pruebaRepository.existsByVehiculoIdAndFechaNotificacion(notificacion.getIdVehiculo(), notificacion.getFecha());
+        System.out.println(notificacion.getIdVehiculo());
+        System.out.println(notificacion.getFechaNotificacion());
+        PruebaEntity prueba = pruebaRepository.existsByVehiculoIdAndFechaNotificacion(notificacion.getIdVehiculo(), notificacion.getFechaNotificacion());
+        System.out.println(prueba);
         return new PruebaDto(prueba);
     }
 
-    public List<PruebaDto> obtenerIncidentesPorEmpleado(Integer idEmpleado){
-        List<NotificacionRadioExcedidoDto> notificaciones = externalApisService.getNotificacionesRadioExcedido();
-
-        return notificaciones.stream().map(notificacion -> buscarPruebaDeNotificacionPorEmpleado(notificacion, idEmpleado)).collect(Collectors.toList());
-    }
-
-    private PruebaDto buscarPruebaDeNotificacionPorEmpleado(NotificacionRadioExcedidoDto notificacion, Integer idEmpleado){
-        PruebaEntity prueba = pruebaRepository.existsByVehiculoIdAndFechaNotificacionAndEmpleado(notificacion.getIdVehiculo(), notificacion.getFecha(), idEmpleado);
+    private PruebaDto buscarPruebaNotificacionEmpleado(NotificacionRadioExcedidoDto notificacion,Integer idEmpleado){
+        PruebaEntity prueba = pruebaRepository.existsByVehiculoIdAndFechaNotificacionAndEmpleado(notificacion.getIdVehiculo(), notificacion.getFechaNotificacion(), idEmpleado);
         return new PruebaDto(prueba);
     }
+    public List<PruebaDto> obtenerIncidentesEmpleado(Integer idEmpleado){
+        List<NotificacionRadioExcedidoDto> notificaciones = restriccionesService.getNotificacionesRadioExcedido();
 
-    public Iterable<PruebaEntity> getAll(){
-        return  pruebaRepository.findAll();
+        return  notificaciones.stream().map(notificacion -> buscarPruebaNotificacionEmpleado(notificacion,idEmpleado)).collect(Collectors.toList());
     }
+
+    public Iterable<PruebaEntity> getAll(){return pruebaRepository.findAll();}
 }

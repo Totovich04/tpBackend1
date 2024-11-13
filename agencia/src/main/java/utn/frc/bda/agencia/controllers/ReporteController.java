@@ -15,14 +15,16 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("reportes")
+@RequestMapping("/reportes")
 public class ReporteController {
+    private final ReporteService service;
     private final ReporteService reporteService;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
     @Autowired
-    public ReporteController(ReporteService reporteService) {
+    public ReporteController(ReporteService reporteService, ReporteService service) {
         this.reporteService = reporteService;
+        this.service = service;
     }
 
     @GetMapping(value = "/kilometrosVehiculo/{idVehiculo}")
@@ -34,7 +36,7 @@ public class ReporteController {
             Date fechaDesdeDate = dateFormat.parse(fechaDesde);
             Date fechaHastaDate = dateFormat.parse(fechaHasta);
 
-            DistanciaVehiculoResponse response = reporteService.calcularDistanciaVehiculo(idVehiculo, fechaDesdeDate, fechaHastaDate);
+            DistanciaVehiculoResponse response = reporteService.calcularDistanciaRecorrida(idVehiculo, fechaDesdeDate, fechaHastaDate);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error al calcular la distancia");
@@ -44,29 +46,29 @@ public class ReporteController {
     @GetMapping("/pruebasVehiculo/{idVehiculo}")
     public ResponseEntity<?> getPruebasVehiculo(@PathVariable Integer idVehiculo) {
         try {
-            List<PruebaDto> pruebaDtos = reporteService.getPruebasVehiculo(idVehiculo);
-            PruebaResponse response = new PruebaResponse("Pruebas del vehiculo", "Pruebas realizadas por el vehiculo", pruebaDtos);
+            List<PruebaDto> pruebaDtos = reporteService.obtenerPruebasVehiculo(idVehiculo);
+            PruebaResponse response = new PruebaResponse(pruebaDtos);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
             return ResponseEntity.status(500).body("Error al obtener las pruebas");
         }
     }
 
-    @GetMapping("/incidentes")
-    public ResponseEntity<?> getIncidentes() {
-        try {
-            List<PruebaDto> pruebaDtos = reporteService.obtenerIncidentes();
-            IncidentesResponse response = new IncidentesResponse(pruebaDtos);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body("Error al obtener las pruebas");
-        }
-    }
+//    @GetMapping("/incidentes")
+//    public ResponseEntity<?> getIncidentes() {
+//        try {
+//            List<PruebaDto> pruebaDtos = reporteService.obtenerIncidentes();
+//            IncidentesResponse response = new IncidentesResponse(pruebaDtos);
+//            return ResponseEntity.ok(response);
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.status(500).body("Error al obtener las pruebas");
+//        }
+//    }
 
     @GetMapping("/incidentes/{idEmpleado}")
     public ResponseEntity<?> getIncidentesEmpleado(@PathVariable Integer idEmpleado) {
         try {
-            List<PruebaDto> pruebaDtos = reporteService.obtenerIncidentesPorEmpleado(idEmpleado);
+            List<PruebaDto> pruebaDtos = reporteService.obtenerIncidentesEmpleado(idEmpleado);
             IncidentesPorEmpleado response = new IncidentesPorEmpleado(idEmpleado, pruebaDtos);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
