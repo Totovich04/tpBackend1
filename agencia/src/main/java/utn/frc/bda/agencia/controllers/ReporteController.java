@@ -1,15 +1,19 @@
 package utn.frc.bda.agencia.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import utn.frc.bda.agencia.dtos.ErrorResponse;
 import utn.frc.bda.agencia.dtos.PruebaDto;
 import utn.frc.bda.agencia.dtos.report.DistanciaVehiculoResponse;
-import utn.frc.bda.agencia.dtos.report.IncidentesPorEmpleado;
+import utn.frc.bda.agencia.dtos.report.IncidentesXEmpleado;
 import utn.frc.bda.agencia.dtos.report.IncidentesResponse;
+import utn.frc.bda.agencia.dtos.report.IncidentesXEmpleado;
 import utn.frc.bda.agencia.dtos.report.PruebaResponse;
 import utn.frc.bda.agencia.services.ReporteService;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -27,30 +31,32 @@ public class ReporteController {
         this.service = service;
     }
 
-    @GetMapping(value = "/kilometrosVehiculo/{idVehiculo}")
+    @GetMapping(value = "/kilometros-vehiculo/{idVehiculo}")
     public ResponseEntity<?> getKilometrosVehiculo(
             @PathVariable Integer idVehiculo,
             @RequestParam("fechaDesde") String fechaDesde,
             @RequestParam("fechaHasta") String fechaHasta) {
         try {
-            Date fechaDesdeDate = dateFormat.parse(fechaDesde);
-            Date fechaHastaDate = dateFormat.parse(fechaHasta);
+            Date desde = dateFormat.parse(fechaDesde);
+            Date hasta = dateFormat.parse(fechaHasta);
 
-            DistanciaVehiculoResponse response = reporteService.calcularDistanciaRecorrida(idVehiculo, fechaDesdeDate, fechaHastaDate);
+            DistanciaVehiculoResponse response = reporteService.calcularDistanciaRecorrida(idVehiculo, desde, hasta);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error al calcular la distancia");
+        } catch (ParseException e) {
+            ErrorResponse errorResponse = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Bad Request",
+                    "Error al parsear la fecha: " + e.getMessage()
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
-    }
-
-    @GetMapping("/pruebasVehiculo/{idVehiculo}")
-    public ResponseEntity<?> getPruebasVehiculo(@PathVariable Integer idVehiculo) {
-        try {
-            List<PruebaDto> pruebaDtos = reporteService.obtenerPruebasVehiculo(idVehiculo);
-            PruebaResponse response = new PruebaResponse(pruebaDtos);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body("Error al obtener las pruebas");
+        catch (Exception e) {
+            ErrorResponse errorResponse = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Bad Request",
+                    "Error al calcular la distancia: " + e.getMessage()
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
     }
 
@@ -65,14 +71,34 @@ public class ReporteController {
 //        }
 //    }
 
-    @GetMapping("/incidentes/{idEmpleado}")
-    public ResponseEntity<?> getIncidentesEmpleado(@PathVariable Integer idEmpleado) {
+    @GetMapping("/detalle-pruebas/{idVehiculo}")
+    public ResponseEntity<?> obtenerPruebasVehiculo(@PathVariable Integer idVehiculo) {
         try {
-            List<PruebaDto> pruebaDtos = reporteService.obtenerIncidentesEmpleado(idEmpleado);
-            IncidentesPorEmpleado response = new IncidentesPorEmpleado(idEmpleado, pruebaDtos);
+            List<PruebaDto> pruebas = reporteService.obtenerPruebasVehiculo(idVehiculo);
+            PruebaResponse response = new PruebaResponse(pruebas);
             return ResponseEntity.ok(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(500).body("Error al obtener las pruebas");
+            ErrorResponse errorResponse = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Bad Request",
+                    e.getMessage()
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        }
+    }
+
+    @GetMapping("/incidentes/{idEmpleado}")
+    public ResponseEntity<?> obtenerIncidentesEmpleado(@PathVariable Integer idEmpleado) {
+        try {
+            List<PruebaDto> pruebas = reporteService.obtenerIncidentesEmpleado(idEmpleado);
+            return ResponseEntity.ok(pruebas);
+        } catch (RuntimeException e) {
+            ErrorResponse errorResponse = new ErrorResponse(
+                    HttpStatus.BAD_REQUEST.value(),
+                    "Bad Request",
+                    "Error al obtener el reporte de incidentes del empleado con el ID: " + idEmpleado + " " +  e.getMessage()
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         }
     }
 }

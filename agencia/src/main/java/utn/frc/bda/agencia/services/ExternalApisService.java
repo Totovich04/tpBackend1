@@ -15,7 +15,7 @@ import java.util.Collections;
 public class ExternalApisService {
 
     private final RestTemplate restTemplate;
-    private final String notificacionUrl = "http://localhost:8080/notificaciones";
+    private final String notificacionUrl = "http://localhost:8070/notificaciones";
 
     @Autowired
     public ExternalApisService(RestTemplate restTemplate) {

@@ -22,13 +22,13 @@ public class PruebaController {
 
     @GetMapping
     public ResponseEntity<Iterable<PruebaDto>> getAllPruebas(){
-        return  ResponseEntity.ok(pruebaService.findAllPruebas());
+        return  ResponseEntity.ok(pruebaService.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<PruebaDto> getPruebaById(@PathVariable Integer id){
         try {
-            PruebaDto pruebaDto = pruebaService.buscarPorId(id);
+            PruebaDto pruebaDto = pruebaService.findById(id);
             return ResponseEntity.ok(pruebaDto);
         } catch (ServiceException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

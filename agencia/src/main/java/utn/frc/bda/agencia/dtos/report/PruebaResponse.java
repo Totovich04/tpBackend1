@@ -6,7 +6,7 @@ import utn.frc.bda.agencia.dtos.PruebaDto;
 import java.util.List;
 
 @Data
-public class PruebaResponse extends ReportResponse{
+public class PruebaResponse {
     private Integer totalPruebas;
     private List<PruebaDto> pruebas;
 

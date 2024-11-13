@@ -16,15 +16,20 @@ public class IncidentesResponse extends ReportResponse {
     private List<PruebasConIncidentesDto> pruebasConIncidentes;
 
     public IncidentesResponse(List<PruebaDto> pruebasConIncidentes) {
-        super("Reporte de incidentes", "Reporte de las pruebas que tienen accidentes registrados.");
+        super("Reporte de Incidentes", "Reporte de las pruebas que tienen accidentes registrados.");
+
+        // Inicializa el conteo total de incidentes
         this.totalIncidentes = pruebasConIncidentes.size();
 
-        Map<Integer, List<PruebaDto>> pruebasAgrupadas = pruebasConIncidentes.stream().collect(Collectors.groupingBy(PruebaDto::getId));
+        // Agrupa las pruebas por ID y cuenta los incidentes
+        Map<Integer, List<PruebaDto>> pruebasAgrupadas = pruebasConIncidentes.stream()
+                .collect(Collectors.groupingBy(PruebaDto::getId));
 
+        // Crea una lista de PruebaConIncidentesDto usando el conteo de incidentes
         this.pruebasConIncidentes = pruebasAgrupadas.entrySet().stream()
                 .map(entry -> new PruebasConIncidentesDto(
-                        entry.getValue().get(0),
-                        entry.getValue().size()
+                        entry.getValue().get(0), // Primer elemento de la lista agrupada para representar la prueba
+                        entry.getValue().size()  // Total de incidentes en esa prueba
                 ))
                 .collect(Collectors.toList());
     }

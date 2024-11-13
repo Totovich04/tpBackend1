@@ -76,10 +76,13 @@ public class ReporteService {
         PruebaEntity prueba = pruebaRepository.existsByVehiculoIdAndFechaNotificacionAndEmpleado(notificacion.getIdVehiculo(), notificacion.getFechaNotificacion(), idEmpleado);
         return new PruebaDto(prueba);
     }
-    public List<PruebaDto> obtenerIncidentesEmpleado(Integer idEmpleado){
+
+    public List<PruebaDto> obtenerIncidentesEmpleado(Integer idEmpleado) {
         List<NotificacionRadioExcedidoDto> notificaciones = restriccionesService.getNotificacionesRadioExcedido();
 
-        return  notificaciones.stream().map(notificacion -> buscarPruebaNotificacionEmpleado(notificacion,idEmpleado)).collect(Collectors.toList());
+        return notificaciones.stream()
+                .map(notificacion -> buscarPruebaNotificacionEmpleado(notificacion, idEmpleado))
+                .collect(Collectors.toList());
     }
 
     public Iterable<PruebaEntity> getAll(){return pruebaRepository.findAll();}

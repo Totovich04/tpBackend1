@@ -15,21 +15,18 @@ public class RestriccionesService {
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${agencia.restricciones.url}")
-    private String url;
+    @Value("${tpi-agencia.microservicio-restricciones.url}")
+    private String urlRestricciones;
 
-    @Value("${notificacion.notificaciones.url}")
-    private String urlNoti;
+    @Value("${tpi-agencia.microservicio-notificaciones.url}")
+    private String urlNotificaciones;
 
     @Cacheable("restrictionsApiCache")
-    public RestriccionesDto getRestricciones(){
-        return restTemplate.getForObject(url, RestriccionesDto.class);
+    public RestriccionesDto getRestricciones() {
+        return restTemplate.getForObject(urlRestricciones, RestriccionesDto.class);
     }
-
-    public List<NotificacionRadioExcedidoDto> getNotificacionesRadioExcedido(){
-        NotificacionRadioExcedidoDto[] notiArray = restTemplate.getForObject(urlNoti+"/notificaciones/seguridad/radio-excedido", NotificacionRadioExcedidoDto[].class);
-
-        assert notiArray != null;
-        return Arrays.asList(notiArray);
+    public List<NotificacionRadioExcedidoDto> getNotificacionesRadioExcedido() {
+        NotificacionRadioExcedidoDto[] notificacionesArray = restTemplate.getForObject(urlNotificaciones + "/notificaciones/seguridad/radio-excedido", NotificacionRadioExcedidoDto[].class);
+        return Arrays.asList(notificacionesArray);
     }
 }

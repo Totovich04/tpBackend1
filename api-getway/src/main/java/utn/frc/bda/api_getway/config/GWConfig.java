@@ -17,6 +17,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 @EnableWebFluxSecurity
 public class GWConfig {
 
+    // Configuración de rutas para Gateway
     @Bean
     public RouteLocator routeLocator(RouteLocatorBuilder builder,
                                      @Value("${tpi-agencia-api-gw.microservicio-agencia}") String uriAgencia,
@@ -37,6 +38,7 @@ public class GWConfig {
                 .build();
     }
 
+    // Configuración de seguridad para las rutas del Gateway
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
         http
@@ -59,6 +61,7 @@ public class GWConfig {
         return http.build();
     }
 
+    // Configuración para convertir JWT en autoridades (roles)
     @Bean
     public ReactiveJwtAuthenticationConverter jwtAuthenticationConverter() {
         // Converter que extrae roles de las "claims" del token JWT
