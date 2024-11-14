@@ -60,16 +60,16 @@ public class ReporteController {
         }
     }
 
-//    @GetMapping("/incidentes")
-//    public ResponseEntity<?> getIncidentes() {
-//        try {
-//            List<PruebaDto> pruebaDtos = reporteService.obtenerIncidentes();
-//            IncidentesResponse response = new IncidentesResponse(pruebaDtos);
-//            return ResponseEntity.ok(response);
-//        } catch (RuntimeException e) {
-//            return ResponseEntity.status(500).body("Error al obtener las pruebas");
-//        }
-//    }
+    @GetMapping("/incidentes")
+    public ResponseEntity<?> getIncidentes() {
+        try {
+            List<PruebaDto> pruebaDtos = reporteService.obtenerIncidentes();
+            IncidentesResponse response = new IncidentesResponse(pruebaDtos);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(500).body("Error al obtener las pruebas");
+        }
+    }
 
     @GetMapping("/detalle-pruebas/{idVehiculo}")
     public ResponseEntity<?> obtenerPruebasVehiculo(@PathVariable Integer idVehiculo) {

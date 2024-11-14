@@ -1,5 +1,6 @@
 package utn.frc.bda.agencia.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,5 +20,6 @@ public class MarcaEntity {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "marca", cascade = CascadeType.PERSIST)
+    @JsonIgnore
     private Set<ModeloEntity> modelos = new HashSet<>();
 }

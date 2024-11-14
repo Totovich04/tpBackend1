@@ -44,10 +44,10 @@ public class GWConfig {
         http
                 .authorizeExchange(exchange -> exchange
                         // Rutas con permisos específicos
-                        .pathMatchers("/api/v1/agencia/pruebas/new").hasRole("EMPLEADO")
-                        .pathMatchers("/api/v1/notificaciones/promocion").hasRole("EMPLEADO")
-                        .pathMatchers("/api/v1/agencia/pruebas/posicion").hasRole("VEHICULO")
-                        .pathMatchers("/api/v1/agencia/reportes/**").hasRole("ADMIN")
+                        .pathMatchers("/api/v1/agencia/pruebas/new").permitAll()
+                        .pathMatchers("/api/v1/notificaciones/promocion").permitAll()
+                        .pathMatchers("/api/v1/agencia/pruebas/posicion").permitAll()
+                        .pathMatchers("/api/v1/agencia/reportes/**").permitAll()
 
                         // Requiere autenticación para cualquier otra ruta
                         .anyExchange().authenticated()

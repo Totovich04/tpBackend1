@@ -86,4 +86,12 @@ public class ReporteService {
     }
 
     public Iterable<PruebaEntity> getAll(){return pruebaRepository.findAll();}
+
+    public List<PruebaDto> obtenerIncidentes() {
+        List<NotificacionRadioExcedidoDto> notificaciones = restriccionesService.getNotificacionesRadioExcedido();
+
+        return notificaciones.stream()
+                .map(this::buscarPruebaDeNotificacion)
+                .collect(Collectors.toList());
+    }
 }

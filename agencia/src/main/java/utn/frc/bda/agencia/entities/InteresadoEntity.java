@@ -29,7 +29,7 @@ public class InteresadoEntity {
     @Column(name = "NRO_LICENCIA")
     private Integer nroLicencia;
 
-    @Column(name = "FECHA_VENCIMIENTO_LICIENCIA")
+    @Column(name = "FECHA_VENCIMIENTO_LICENCIA")
     private Date fechaVtoLicencia;
 
     @EqualsAndHashCode.Exclude

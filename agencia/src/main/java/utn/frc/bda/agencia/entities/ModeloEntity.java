@@ -1,5 +1,6 @@
 package utn.frc.bda.agencia.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,7 @@ public class ModeloEntity {
     @ToString.Exclude
     @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
     @JoinColumn(name = "ID_MARCA")
+    @JsonIgnore
     private MarcaEntity marca;
 
     private String descripcion;
@@ -24,6 +26,7 @@ public class ModeloEntity {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "modelo", cascade = CascadeType.PERSIST)
+    @JsonIgnore
     private Set<VehiculoEntity> vehiculos;
 
     public void setMarca(MarcaEntity marca) {

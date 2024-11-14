@@ -19,7 +19,7 @@ public class VehiculoService {
     private final PruebaRepository pruebaRepository;
     private final PosicionRepository posicionRepository;
     private final RestriccionesService restriccionesService;
-    private  ExternalApisService externalApisService;
+    private final ExternalApisService externalApisService;
 
     @Autowired
     public VehiculoService(VehiculoRepository vrepository, PruebaRepository pruebaRepository, PosicionRepository posicionRepository, RestriccionesService restriccionesService, ExternalApisService externalApisService) {
@@ -27,6 +27,7 @@ public class VehiculoService {
         this.pruebaRepository = pruebaRepository;
         this.posicionRepository = posicionRepository;
         this.restriccionesService = restriccionesService;
+        this.externalApisService = externalApisService;
     }
 
     public PosicionDto procesarPosicion(PosicionDto posicionDto) {
