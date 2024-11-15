@@ -13,6 +13,7 @@ public class VehiculoDto {
     private Integer IdModelo;
     private Integer anio;
 
+    // Indica que este constructor será utilizado para crear instancias de la clase a partir de los valores de un JSON.
     @JsonCreator
     public VehiculoDto(
             @JsonProperty("id") Integer id,

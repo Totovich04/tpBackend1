@@ -11,7 +11,7 @@ public class PosicionDtoDeserializer {
 
     public PosicionDto deserializarPosicion(byte[] data) {
         try {
-            // Deserializar desde byte[] (si los datos están en formato JSON)
+            // Convierte el Json en un objeto Java, en este caso posicionDto
             return objectMapper.readValue(data, PosicionDto.class);
         } catch (Exception e) {
             throw new RuntimeException("Failed to deserialize data", e);
@@ -20,7 +20,7 @@ public class PosicionDtoDeserializer {
 
     public PosicionDto deserializarPosicion(String jsonData) {
         try {
-            // Deserializar desde String (si los datos están en formato JSON)
+            // Convierte un String en un objeto
             return objectMapper.readValue(jsonData, PosicionDto.class);
         } catch (Exception e) {
             throw new RuntimeException("Failed to deserialize data", e);

@@ -15,6 +15,7 @@ public class PosicionDto {
     private Coordenadas coordenadas;
     private String texto;
 
+    //Indica que este constructor será utilizado para crear instancias de la clase a partir de los valores de un JSON.
     @JsonCreator
     public PosicionDto(
             @JsonProperty("id") Integer id,

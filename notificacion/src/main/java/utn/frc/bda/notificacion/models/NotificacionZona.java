@@ -21,6 +21,7 @@ public class NotificacionZona extends Notificacion{
     private String nivelPeligro;
     private Integer idVehiculo;
 
+    //Constructor
     public NotificacionZona(PosicionDto posicion, String nivelPeligro, Integer idVehiculo) {
         this.latitud = posicion.getCoordenadas().getLatitud();
         this.longitud = posicion.getCoordenadas().getLongitud();
@@ -28,6 +29,7 @@ public class NotificacionZona extends Notificacion{
         this.idVehiculo = idVehiculo;
     }
 
+    //Constructor completo
     public NotificacionZona(Integer id, LocalDateTime fechaNotificacion, String texto, PosicionDto posicion, String nivelPeligro, Integer idVehiculo) {
         super(id, fechaNotificacion, texto);
         this.latitud = posicion.getCoordenadas().getLatitud();

@@ -76,6 +76,7 @@ public class VehiculoService {
                     && lonVehiculo >= lonNoroeste && lonVehiculo <= lonSureste;
         });
     }
+
     private PosicionDto construirPosicion(PosicionDto posicionDto, PosicionEntity posicion) {
         posicionDto.setId(posicion.getId());
         posicionDto.getVehiculo().setPatente(posicion.getVehiculo().getPatente());

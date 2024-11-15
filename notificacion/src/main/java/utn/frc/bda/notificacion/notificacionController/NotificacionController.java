@@ -25,11 +25,13 @@ public class NotificacionController {
         return ResponseEntity.ok(notificacionService.getAllPromociones());
     }
 
+
     //Obtener notificacion de radio excedido
     @GetMapping("/seguridad/radio")
     public ResponseEntity<?> getAllRadios() {
         return ResponseEntity.ok(notificacionService.getAllRadios());
     }
+
 
     //Obtener notificacion de zona peligrosa
     @GetMapping("/seguridad/zona")

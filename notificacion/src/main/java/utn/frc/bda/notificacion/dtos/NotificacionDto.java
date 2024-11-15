@@ -14,6 +14,7 @@ public abstract class NotificacionDto {
     private LocalDateTime fechaNotificacion;
     private String texto;
 
+    // Constructor con parámetros para inicializar los campos id, fechaNotificacion y texto
     public NotificacionDto(Integer id, LocalDateTime fechaNotificacion, String texto) {
         this.id = id;
         this.fechaNotificacion = fechaNotificacion;

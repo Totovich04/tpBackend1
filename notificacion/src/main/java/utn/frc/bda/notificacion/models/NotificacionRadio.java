@@ -27,6 +27,7 @@ public class NotificacionRadio extends Notificacion {
         this.idVehiculo = idVehiculo;
     }
 
+    //Constructor completo
     public NotificacionRadio(Integer id, LocalDateTime fechaNotificacion, String texto, double latitud, double longitud, Integer idVehiculo) {
         super(id, fechaNotificacion, texto);
         this.latitud = latitud;

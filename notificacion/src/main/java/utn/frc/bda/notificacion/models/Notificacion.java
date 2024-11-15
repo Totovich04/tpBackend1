@@ -21,6 +21,7 @@ public abstract class Notificacion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    // Indica que el campo 'fechaNotificacion' debe ser tratado como una fecha y hora, almacenada en el formato TIMESTAMP en la base de datos.
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime fechaNotificacion;
     private String texto;
